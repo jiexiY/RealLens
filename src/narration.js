@@ -1,5 +1,6 @@
 import {createHybridSpeechPlayer} from './eleven-output.js';
 import './narration.css';
+import './no-arrows.css';
 
 export const NARRATION_KEY='reallens.narration.v1';
 let enabled=true,remembered=true,introTimer=null,toolbar,notice,retry,toggle,introduced=false;

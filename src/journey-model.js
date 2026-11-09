@@ -98,7 +98,7 @@ export function forecastWindow(weather,departure,duration,now=new Date()) {
     low:temperatures.length===periods.length?Math.round(Math.min(...temperatures)):null,
     high:temperatures.length===periods.length?Math.round(Math.max(...temperatures)):null,
     wind:[...new Set(periods.map(p=>p.wind&&`${p.wind} ${p.windDirection??''}`.trim()).filter(Boolean))].join(' / '),
-    description:[...new Set(periods.map(p=>p.description).filter(Boolean))].join(' → ')};
+    description:[...new Set(periods.map(p=>p.description).filter(Boolean))].join(' to ')};
 }
 export function sampleSatellite(grid,coord) {
   if(!grid?.bbox4326)return null;const [w,s,e,n]=grid.bbox4326;

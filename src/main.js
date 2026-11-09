@@ -4,6 +4,7 @@ import photos from './photos.json';
 import { photoMapPosition } from './photo-location.js';
 import './style.css';
 import './photos.css';
+import './no-arrows.css';
 
 const D = `${import.meta.env.BASE_URL}data/`;
 const P = `${import.meta.env.BASE_URL}photos/`;
@@ -60,7 +61,7 @@ let data, viewer, tourTimer;
 $('#app').innerHTML = `
   <header class="topbar">
     <a class="brand" href="./" aria-label="RealLens home"><span class="brand-mark">${icon('globe')}</span>Field<span>Lens</span><span class="brand-divider"></span><small>FROM ORBIT TO GROUND</small></a>
-    <nav aria-label="Main navigation"><button class="nav-link" id="about-btn">The field study ${icon('arrow')}</button><button class="source-button" id="sources-btn">${icon('layers')} Sources & method</button></nav>
+    <nav aria-label="Main navigation"><button class="nav-link" id="about-btn">The field study </button><button class="source-button" id="sources-btn">${icon('layers')} Sources & method</button></nav>
   </header>
   <main>
     <section class="intro">
@@ -84,12 +85,12 @@ $('#app').innerHTML = `
           <div id="photo-view" class="photo-view" tabindex="0" aria-label="Lake Alice ground photograph viewer" hidden>
             <img id="ground-photo" alt="" decoding="async"/>
             <span class="photo-number" id="photo-number"></span>
-            <button class="photo-arrow photo-prev" id="prev-photo" aria-label="Previous photograph">${icon('left')}</button>
-            <button class="photo-arrow photo-next" id="next-photo" aria-label="Next photograph">${icon('right')}</button>
+            <button class="photo-arrow photo-prev" id="prev-photo" aria-label="Previous photograph">Previous</button>
+            <button class="photo-arrow photo-next" id="next-photo" aria-label="Next photograph">Next</button>
             <div class="photo-overlay"><span>FROM THE GROUND</span><h2 id="photo-title" aria-live="polite"></h2><p id="photo-byline"></p></div>
             <div class="photo-error" id="photo-error" hidden>Photograph could not load. <button id="retry-photo">Try again</button></div>
           </div>
-          <div class="scene-top"><span class="scene-badge"><span></span><b id="scene-badge">USGS LIDAR · 2018–19</b></span><span class="north">N <span>↑</span></span></div>
+          <div class="scene-top"><span class="scene-badge"><span></span><b id="scene-badge">USGS LIDAR · 2018–19</b></span><span class="north">North is up</span></div>
           <div id="scene-pins"></div>
           <div id="load-state" class="load-state"><span class="loader-orbit">${icon('globe')}</span><strong>Bringing Lake Alice into view</strong><span id="load-detail">Loading the archived scan…</span><div class="load-track"><i id="load-bar"></i></div></div>
           <div id="pixel-tooltip" hidden></div>
@@ -98,7 +99,7 @@ $('#app').innerHTML = `
             <button data-layer="ndwi">${icon('water')} Water <small>NDWI</small></button>
             <button data-layer="rgb">Natural color</button>
           </div>
-          <div class="scene-bottom"><div class="scene-instructions" id="scene-instructions">${icon('orbit')} Drag to orbit <span>·</span> Scroll to zoom <span>·</span> Right-drag to pan</div><div class="scene-actions"><button id="top-view" title="Top-down view" aria-label="Top-down view">${icon('map')}</button><button id="reset-view" title="Reset camera" aria-label="Reset camera">${icon('reset')}</button></div></div>
+          <div class="scene-bottom"><div class="scene-instructions" id="scene-instructions">${icon('orbit')} Drag to orbit <span>·</span> Scroll to zoom <span>·</span> Right-drag to pan</div><div class="scene-actions"><button id="top-view" title="Top-down view" aria-label="Top-down view">${icon('map')}</button><button id="reset-view" title="Reset camera" aria-label="Reset camera">Reset</button></div></div>
           <div id="legend" class="map-legend" hidden><div><b id="legend-name">Vegetation index</b><small id="legend-unit">NDVI · −1 to +1</small></div><div id="legend-gradient"></div><div class="legend-labels"><span id="legend-low">Lower</span><span id="legend-high">Higher</span></div></div>
         </div>
         <div class="viewer-caption"><span id="viewer-caption">A real laser scan, colored with separate aerial imagery.</span><button id="color-mode">Color: aerial ${icon('layers')}</button></div>
@@ -106,26 +107,26 @@ $('#app').innerHTML = `
         <div class="satellite-timeline" id="satellite-timeline" hidden>
           <span class="timeline-label">OBSERVATION DATE</span><div class="date-buttons"><button data-season="spring" class="active">21 Mar 2024</button><span class="timeline-line"></span><button data-season="autumn">22 Sep 2024</button></div>
           <button class="compare-button" id="compare-button" aria-pressed="false">Compare dates</button>
-          <label id="swipe-control" hidden>Swipe comparison <input id="swipe" type="range" min="0" max="100" value="50"/><span>March ← → September</span></label>
+          <label id="swipe-control" hidden>Swipe comparison <input id="swipe" type="range" min="0" max="100" value="50"/><span>March / September</span></label>
         </div>
         <section class="photo-archive" aria-label="Ground photo archive">
           <div class="archive-heading"><div><span class="eyebrow">GROUND ARCHIVE <span class="archive-count">04</span></span><h2>The place behind the pixels.</h2></div><span>Real photographs · 2022 & 2026</span></div>
           <div class="photo-filmstrip">${photos.map((p,i)=>`<button class="photo-card" data-photo="${i}" aria-label="Open photograph: ${p.title}" aria-pressed="false"><span class="photo-thumb"><img src="${P}${p.file}" alt="" loading="lazy"/><span>${icon('camera')}</span></span><strong>${p.title}</strong><small>${dateLabel(p.date)}</small></button>`).join('')}</div>
         </section>
         <div class="viewpoints-head"><div><span class="eyebrow">FOLLOW YOUR CURIOSITY</span><h2>Four ways into the landscape.</h2></div><button id="tour-button">${icon('play')} Take the tour</button></div>
-        <div class="viewpoints">${views.map((v,i)=>`<button class="view-card ${i===0?'selected':''}" data-view="${i}" aria-pressed="${i===0}"><span class="view-thumb" style="background-image:url('${D}aerial.jpg');background-position:${v.crop}"><span>${v.number}</span>${icon('arrow')}</span><strong>${v.title}</strong><small>${v.subtitle}</small></button>`).join('')}</div>
+        <div class="viewpoints">${views.map((v,i)=>`<button class="view-card ${i===0?'selected':''}" data-view="${i}" aria-pressed="${i===0}"><span class="view-thumb" style="background-image:url('${D}aerial.jpg');background-position:${v.crop}"><span>${v.number}</span></span><strong>${v.title}</strong><small>${v.subtitle}</small></button>`).join('')}</div>
       </div>
       <aside class="field-notes" aria-label="Field notes">
         <div class="notes-header"><span id="note-label">${icon('leaf')} FIELD NOTES</span><span id="note-count">01 / 04</span></div>
         <div id="note-content"></div>
         <div class="observation-box"><div class="observation-title">${icon('satellite')} SATELLITE OBSERVATION <span id="metric-date">MAR 21, 2024</span></div><div class="metrics"><div><small>Vegetation · NDVI</small><strong id="ndvi-value">—</strong><span id="ndvi-bar"></span></div><div><small>Water · NDWI</small><strong id="ndwi-value">—</strong><span id="ndwi-bar"></span></div></div><p id="metric-context">Index values at the selected viewpoint. Source bands: 10 m.</p></div>
         <div class="note-caution">${icon('info')}<p id="note-caution"></p></div>
-        <div class="note-nav"><button id="prev-note" aria-label="Previous field note">${icon('left')}</button><span id="step-label">OPEN WATER</span><button id="next-note" aria-label="Next field note">${icon('right')}</button></div>
+        <div class="note-nav"><button id="prev-note" aria-label="Previous field note">Previous</button><span id="step-label">OPEN WATER</span><button id="next-note" aria-label="Next field note">Next</button></div>
       </aside>
     </section>
-    <section class="learning-strip"><span class="lesson-mark">${icon('globe')}</span><div><span class="eyebrow">BUILT ON A REAL LESSON</span><p>One place. Different perspectives. Better questions.</p></div><a href="https://geo-di-lab.github.io/emerge-lessons/docs/ch3/lesson3.html" target="_blank" rel="noreferrer">Explore the EMERGE lesson ${icon('arrow')}</a></section>
+    <section class="learning-strip"><span class="lesson-mark">${icon('globe')}</span><div><span class="eyebrow">BUILT ON A REAL LESSON</span><p>One place. Different perspectives. Better questions.</p></div><a href="https://geo-di-lab.github.io/emerge-lessons/docs/ch3/lesson3.html" target="_blank" rel="noreferrer">Explore the EMERGE lesson </a></section>
   </main>
-  <footer><span>RealLens <span class="footer-dot">·</span> An environmental field study</span><span>USGS / USDA <span>+</span> Copernicus Sentinel-2 <span>+</span> EMERGE</span><button id="download-notes">Save field notes ${icon('download')}</button></footer>
+  <footer><span>RealLens <span class="footer-dot">·</span> An environmental field study</span><span>USGS / USDA <span>+</span> Copernicus Sentinel-2 <span>+</span> EMERGE</span><button id="download-notes">Save field notes </button></footer>
   <dialog id="info-dialog"><div class="dialog-top"><span class="eyebrow">THE REALLENS NOTEBOOK</span><button id="close-dialog" class="icon-button" aria-label="Close dialog">${icon('cross')}</button></div><div id="dialog-content"></div></dialog>
   <div class="toast" id="toast" role="status" hidden></div>
 `;
@@ -137,9 +138,9 @@ function renderNote() {
   const v=views[state.view];
   $('#note-count').textContent=`${v.number} / 04`;
   const related=[0,1,0,2][state.view];const photo=photos[related];
-  $('#note-content').innerHTML=`<span class="note-kicker">${v.tag}</span><h2>${v.heading}</h2><p class="note-body">${v.body}</p><div class="look-closer"><span class="eyebrow">LOOK A LITTLE CLOSER</span><p>${v.prompt}</p><button id="investigate">Explore ${v.layer==='ndwi'?'water':v.layer==='ndvi'?'vegetation':'natural color'} ${icon('right')}</button></div><p class="explanation">${v.explanation}</p><button class="ground-evidence" id="related-photo"><img src="${P}${photo.file}" alt=""/><span><small>${icon('camera')} GROUND EVIDENCE</small><strong>${photo.title}</strong><span>Open photograph ${icon('arrow')}</span></span></button>`;
+  $('#note-content').innerHTML=`<span class="note-kicker">${v.tag}</span><h2>${v.heading}</h2><p class="note-body">${v.body}</p><div class="look-closer"><span class="eyebrow">LOOK A LITTLE CLOSER</span><p>${v.prompt}</p><button id="investigate">Explore ${v.layer==='ndwi'?'water':v.layer==='ndvi'?'vegetation':'natural color'} </button></div><p class="explanation">${v.explanation}</p><button class="ground-evidence" id="related-photo"><img src="${P}${photo.file}" alt=""/><span><small>${icon('camera')} GROUND EVIDENCE</small><strong>${photo.title}</strong><span>Open photograph </span></span></button>`;
   $('#related-photo').onclick=()=>selectPhoto(related);
-  $('#note-caution').innerHTML=v.note+(v.source?` <a href="${v.source}" target="_blank" rel="noreferrer">Read the plan ${icon('arrow')}</a>`:'');
+  $('#note-caution').innerHTML=v.note+(v.source?` <a href="${v.source}" target="_blank" rel="noreferrer">Read the plan </a>`:'');
   $('#step-label').textContent=v.title.toUpperCase();
   $('#investigate').onclick=()=>{state.layer=v.layer;state.compare=false;setMode('satellite');};
   $$('[data-view]').forEach(b=>{const active=Number(b.dataset.view)===state.view;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',active);});
@@ -192,14 +193,14 @@ function renderPhoto(){
   $('#photo-byline').textContent=`${dateLabel(p.date)} · Photograph by ${p.author}`;
   $('#photo-number').textContent=`${String(state.photo+1).padStart(2,'0')} / ${String(photos.length).padStart(2,'0')}`;
   $('#viewer-caption').textContent='An independent ground photograph. Not an input to the 3D reconstruction.';
-  $('#photo-credit').innerHTML=`<span>© ${p.author} · <a href="${p.licenseUrl}" target="_blank" rel="noreferrer">${p.license}</a></span><a href="${p.source}" target="_blank" rel="noreferrer">Original & attribution ${icon('arrow')}</a>`;
+  $('#photo-credit').innerHTML=`<span>© ${p.author} · <a href="${p.licenseUrl}" target="_blank" rel="noreferrer">${p.license}</a></span><a href="${p.source}" target="_blank" rel="noreferrer">Original & attribution </a>`;
 }
 function renderPhotoNote(){
   const p=photos[state.photo];
   $('#note-label').innerHTML=`${icon('camera')} PHOTO FIELD NOTES`;
   $('#note-count').textContent=`${String(state.photo+1).padStart(2,'0')} / 04`;
   $('.observation-box').hidden=true;
-  $('#note-content').innerHTML=`<span class="note-kicker">OBSERVE · CONNECT · QUESTION</span><h2>${p.title}.</h2><p class="note-body">${p.caption}</p><div class="look-closer"><span class="eyebrow">LOOK A LITTLE CLOSER</span><p>${p.question}</p><button id="photo-context">${state.mode==='aerial'?'Back to photograph':'Locate camera on aerial'} ${icon('right')}</button></div><p class="explanation">${p.insight}</p><dl class="photo-record"><div><dt>PHOTOGRAPHED</dt><dd>${dateLabel(p.date)}</dd></div><div><dt>PHOTOGRAPHER</dt><dd>${p.author}</dd></div><div><dt>REUSE LICENSE</dt><dd><a href="${p.licenseUrl}" target="_blank" rel="noreferrer">${p.license} ${icon('arrow')}</a></dd></div></dl><button class="photo-to-scan" id="photo-to-scan">Explore the related 3D view ${icon('arrow')}</button>`;
+  $('#note-content').innerHTML=`<span class="note-kicker">OBSERVE · CONNECT · QUESTION</span><h2>${p.title}.</h2><p class="note-body">${p.caption}</p><div class="look-closer"><span class="eyebrow">LOOK A LITTLE CLOSER</span><p>${p.question}</p><button id="photo-context">${state.mode==='aerial'?'Back to photograph':'Locate camera on aerial'} </button></div><p class="explanation">${p.insight}</p><dl class="photo-record"><div><dt>PHOTOGRAPHED</dt><dd>${dateLabel(p.date)}</dd></div><div><dt>PHOTOGRAPHER</dt><dd>${p.author}</dd></div><div><dt>REUSE LICENSE</dt><dd><a href="${p.licenseUrl}" target="_blank" rel="noreferrer">${p.license} </a></dd></div></dl><button class="photo-to-scan" id="photo-to-scan">Explore the related 3D view </button>`;
   $('#photo-context').onclick=()=>{if(state.mode==='aerial'){selectPhoto(state.photo);return;}setMode('aerial');state.locatedPhoto=state.photo;renderMapPins();renderPhotoNote();$('#viewer-caption').textContent='Camera location supplied by the photographer. Accuracy and viewing direction are not verified.';};
   $('#photo-to-scan').onclick=()=>{setMode('3d');setView(p.relatedView);};
   $('#note-caution').textContent='Separate dates, separate evidence. These photographs were not used to generate the scan or satellite indices. Related views are thematic, not exact camera matches.';
@@ -305,11 +306,11 @@ $('#about-btn').onclick=()=>openDialog(`<h2>One place, many ways of seeing.</h2>
 $('#sources-btn').onclick=()=>{
   const scenes=data?.satellite.scenes||[];
   openDialog(`<h2>Follow the evidence.</h2><p>Every layer represents a particular observation, date, and scale. The 3D scan stays fixed while satellite dates change.</p>
-  <div class="source-item"><span>01</span><div><h3>3D geometry · USGS 3DEP</h3><p>Alachua County survey, Dec 2018–Dec 2019. ${data?.lidar.points.toLocaleString()||'650,000'} measured points in a deterministic display subset. Geometry is LiDAR, not a photo reconstruction or a Gaussian splat. No vertical exaggeration.</p><a href="https://portal.opentopography.org/usgsDataset?dsid=FL_Peninsular_FDEM_Alachua_2018" target="_blank" rel="noreferrer">Dataset & survey metadata ${icon('arrow')}</a></div></div>
-  <div class="source-item"><span>02</span><div><h3>Aerial color · USDA / USGS</h3><p>USGS NAIP Plus mosaic. The center tile was acquired January 26, 2023; dates can vary across the mosaic. Aerial RGB is projected onto the LiDAR from above. Colors and geometry are different acquisitions. A flat image beneath the points provides context, not measured water depth.</p><a href="https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPPlus/ImageServer" target="_blank" rel="noreferrer">Aerial imagery service ${icon('arrow')}</a></div></div>
-  <div class="source-item"><span>03</span><div><h3>Satellite indices · Copernicus Sentinel-2</h3><p>Two individual L2A Collection 1 scenes, not live readings or a seasonal trend. Red, green, and near-infrared bands have 10 m source pixels. Scene classification masks no-data, cloud, cloud shadow, snow, and defective pixels; remaining classification errors are possible.</p>${scenes.map(s=>`<a href="${s.stacUrl}" target="_blank" rel="noreferrer">${dateLabel(s.datetime)} · ${(s.validFractionLocal*100).toFixed(1)}% local pixels retained ${icon('arrow')}</a>`).join('')}<p>Values at a viewpoint sample a satellite pixel, not an individual tree or water sample.</p></div></div>
-  <div class="source-item"><span>04</span><div><h3>Method · EMERGE</h3><p>Textbook 1, Chapter 3, Lesson 3. We apply its band-ratio equations to a bounded Lake Alice extent. Our adaptation uses separate dated scenes instead of a temporal median and applies a quality mask. Nearest-neighbor reprojection aligns the display layers.</p><code>NDVI = (NIR − red) / (NIR + red)<br>NDWI = (green − NIR) / (green + NIR)</code><a href="https://geo-di-lab.github.io/emerge-lessons/docs/ch3/lesson3.html" target="_blank" rel="noreferrer">Open the source lesson ${icon('arrow')}</a><p>These indices do not establish drinking-water safety, pollution, mosquito abundance, or disease risk.</p></div></div>
-  <div class="source-item"><span>05</span><div><h3>Ground photographs · Wikimedia Commons</h3><p>Four real Lake Alice photographs by Michael Rivera and Alexander Abair, shared under Creative Commons Attribution 4.0. Capture dates and camera coordinates are the contributors’ records, not independently surveyed positions. They are contextual evidence, not inputs to the LiDAR or satellite calculations.</p>${photos.map(p=>`<a href="${p.source}" target="_blank" rel="noreferrer">${p.originalTitle} ${icon('arrow')}</a><p>${p.author} · ${dateLabel(p.date)} · <a class="inline-license" href="${p.licenseUrl}" target="_blank" rel="noreferrer">${p.license}</a></p>`).join('')}<p>Wikimedia’s 1280-pixel previews are bundled without image edits. Thumbnail cards crop the display; the main viewer preserves the full frame. No photographer endorsement is implied.</p></div></div>
+  <div class="source-item"><span>01</span><div><h3>3D geometry · USGS 3DEP</h3><p>Alachua County survey, Dec 2018–Dec 2019. ${data?.lidar.points.toLocaleString()||'650,000'} measured points in a deterministic display subset. Geometry is LiDAR, not a photo reconstruction or a Gaussian splat. No vertical exaggeration.</p><a href="https://portal.opentopography.org/usgsDataset?dsid=FL_Peninsular_FDEM_Alachua_2018" target="_blank" rel="noreferrer">Dataset & survey metadata </a></div></div>
+  <div class="source-item"><span>02</span><div><h3>Aerial color · USDA / USGS</h3><p>USGS NAIP Plus mosaic. The center tile was acquired January 26, 2023; dates can vary across the mosaic. Aerial RGB is projected onto the LiDAR from above. Colors and geometry are different acquisitions. A flat image beneath the points provides context, not measured water depth.</p><a href="https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPPlus/ImageServer" target="_blank" rel="noreferrer">Aerial imagery service </a></div></div>
+  <div class="source-item"><span>03</span><div><h3>Satellite indices · Copernicus Sentinel-2</h3><p>Two individual L2A Collection 1 scenes, not live readings or a seasonal trend. Red, green, and near-infrared bands have 10 m source pixels. Scene classification masks no-data, cloud, cloud shadow, snow, and defective pixels; remaining classification errors are possible.</p>${scenes.map(s=>`<a href="${s.stacUrl}" target="_blank" rel="noreferrer">${dateLabel(s.datetime)} · ${(s.validFractionLocal*100).toFixed(1)}% local pixels retained </a>`).join('')}<p>Values at a viewpoint sample a satellite pixel, not an individual tree or water sample.</p></div></div>
+  <div class="source-item"><span>04</span><div><h3>Method · EMERGE</h3><p>Textbook 1, Chapter 3, Lesson 3. We apply its band-ratio equations to a bounded Lake Alice extent. Our adaptation uses separate dated scenes instead of a temporal median and applies a quality mask. Nearest-neighbor reprojection aligns the display layers.</p><code>NDVI = (NIR − red) / (NIR + red)<br>NDWI = (green − NIR) / (green + NIR)</code><a href="https://geo-di-lab.github.io/emerge-lessons/docs/ch3/lesson3.html" target="_blank" rel="noreferrer">Open the source lesson </a><p>These indices do not establish drinking-water safety, pollution, mosquito abundance, or disease risk.</p></div></div>
+  <div class="source-item"><span>05</span><div><h3>Ground photographs · Wikimedia Commons</h3><p>Four real Lake Alice photographs by Michael Rivera and Alexander Abair, shared under Creative Commons Attribution 4.0. Capture dates and camera coordinates are the contributors’ records, not independently surveyed positions. They are contextual evidence, not inputs to the LiDAR or satellite calculations.</p>${photos.map(p=>`<a href="${p.source}" target="_blank" rel="noreferrer">${p.originalTitle} </a><p>${p.author} · ${dateLabel(p.date)} · <a class="inline-license" href="${p.licenseUrl}" target="_blank" rel="noreferrer">${p.license}</a></p>`).join('')}<p>Wikimedia’s 1280-pixel previews are bundled without image edits. Thumbnail cards crop the display; the main viewer preserves the full frame. No photographer endorsement is implied.</p></div></div>
   <div class="dialog-callout"><b>Reproducibility</b><p>The project includes its data preparation script, input catalog records, source links, and validation checks. No GLOBE observations or geoemerge package are used in this first version. The track permits other public environmental data.</p></div>`);
 };
 $('#download-notes').onclick=()=>{

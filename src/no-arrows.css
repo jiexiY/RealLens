@@ -1,0 +1,11 @@
+/* Keep native control semantics while using non-arrow visual cues. */
+details>summary{list-style:none}
+details>summary::marker{content:''}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:'+';display:inline-block;margin-left:12px;font-weight:600}
+details[open]>summary::after{content:'−'}
+html select{appearance:none;-webkit-appearance:none;background-image:none}
+.preview-top>span:first-child{font-size:.5625rem}
+.preview-audio a{flex-shrink:0;white-space:nowrap;width:auto;min-width:64px;padding:8px 12px;font-size:.875rem;border-radius:12px}
+.photo-arrow,#prev-photo,#next-photo,#previous-views,#next-views,#prev-note,#next-note{width:auto;min-width:64px;padding-inline:10px;font-size:12px}
+#compare-line:after{width:auto;min-width:55px;padding:3px;font-size:10px}
