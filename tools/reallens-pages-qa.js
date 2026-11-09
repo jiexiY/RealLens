@@ -19,12 +19,12 @@ async (page) => {
  assert(await page.getByRole('link',{name:'RealLens Open home',exact:true}).count()===1,'White welcome has a named, native icon link');
  assert(await page.locator('h1').innerText()==='RealLens'&&await page.locator('#demo-action').evaluate(el=>el.getBoundingClientRect().width===1)&&!await page.locator('#demo-hint').isVisible(),'White-screen main content stays product name and icon, with separate voice controls');
  assert(await page.evaluate(()=>getComputedStyle(document.documentElement).backgroundColor)==='rgb(255, 255, 255)','Welcome background is white');
- await page.keyboard.press('Tab');await page.keyboard.press('Tab');await page.keyboard.press('Tab');
+ await page.keyboard.press('Tab');await page.keyboard.press('Tab');
  assert(await page.locator('.demo-entry').evaluate(el=>el===document.activeElement),'White welcome is reachable by keyboard');
  await page.keyboard.press('Enter');await page.waitForURL('**/welcome');
  const names=['Plan a trip','Talk to RealLens','Check conditions','Bus alerts'],paths=['plan','talk','conditions','bus'];
  assert(await page.locator('.welcome-tile').count()===4,'Home contains exactly four primary actions');
- await page.keyboard.press('Tab');await page.keyboard.press('Tab');
+ await page.keyboard.press('Tab');
  for(let i=0;i<4;i++){
   const link=page.getByRole('link',{name:names[i],exact:true});
   assert(await link.getAttribute('href')==='/'+paths[i],names[i]+' opens its own page');

@@ -6,4 +6,15 @@
 [data-contrast=high] #transit-filter-error{color:#fff;background:#351d10}
 @media(max-width:760px){.transit-panel{padding:22px}.transit-heading{flex-wrap:wrap;gap:0}.transit-heading>.badge{margin-bottom:18px}.transit-filter>div{width:100%}.transit-controls .button{font-size:.8125rem}.transit-post{padding:17px}.transit-post h4{min-width:0;flex-basis:100%}.workspace-heading>div:last-child{text-align:left}.transit-filter .button{flex:1}.transit-filter .button,.transit-controls .button{white-space:normal}.transit-foot a{flex-wrap:wrap}}
 @media(max-width:390px){.transit-panel{padding:18px}.transit-filter .button{flex-basis:100%}.transit-controls{flex-direction:column}.transit-controls .button{width:100%}.transit-post{padding:15px}.transit-heading h2{font-size:1.4rem}}
+/* The standalone page keeps controls aligned inside its padded card. */
+.app-main .transit-filter{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px}
+.app-main .transit-filter>div{width:auto;min-width:0}
+.app-main .transit-filter label{display:block;margin-bottom:8px}
+.app-main #transit-route{min-height:52px}
+.app-main .transit-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.app-main .transit-filter .button,.app-main .transit-controls .button{white-space:normal;text-align:center;justify-content:center;min-width:0}
+.app-main .transit-auto{display:flex;align-items:flex-start;gap:12px;min-height:44px;line-height:1.5}
+.app-main .transit-auto input{flex-shrink:0;margin-top:3px}
+@media(max-width:760px){.app-main .transit-filter{grid-template-columns:repeat(2,minmax(0,1fr))}.app-main .transit-filter>div{grid-column:1/-1}.app-main .transit-controls{grid-template-columns:1fr}}
+@media(max-width:480px){.app-main .transit-filter{grid-template-columns:1fr}}
 @media print{.transit-filter,.transit-controls,.transit-auto{display:none!important}.transit-panel{break-inside:avoid}}

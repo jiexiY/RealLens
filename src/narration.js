@@ -62,7 +62,7 @@ const summaries={
 const pathname=location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';
 const summary=summaries[pathname]||'RealLens. Voice controls are at the top.';
 toolbar=document.createElement('div');toolbar.className='narration-toolbar';toolbar.setAttribute('role','region');toolbar.setAttribute('aria-label','Voice controls');
-toolbar.innerHTML='<div class="narration-actions"><button type="button" id="narration-toggle"></button><button type="button" id="narration-retry" hidden>Play voice</button><span class="narration-credit"><a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer" aria-label="Voice by ElevenLabs (opens a new tab)">elevenlabs.io</a></span></div><div id="narration-status" class="narration-status" role="status" aria-live="polite"></div>';
+toolbar.innerHTML='<div class="narration-actions"><button type="button" id="narration-toggle"></button><button type="button" id="narration-retry" hidden>Play voice</button></div><div id="narration-status" class="narration-status" role="status" aria-live="polite"></div>';
 document.body.prepend(toolbar);
 toggle=toolbar.querySelector('#narration-toggle');retry=toolbar.querySelector('#narration-retry');notice=toolbar.querySelector('#narration-status');
 const narrator=createManagedSpeech();
