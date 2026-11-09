@@ -12,6 +12,24 @@
 .app-main .source-grid{grid-template-columns:1fr}.app-main .source-grid p{font-size:1rem}.app-main .source-grid h3{font-size:1.25rem}.app-main details{overflow-wrap:anywhere}
 .app-main .brief-tools .micro{margin-left:0}.app-main .brief-heading h2{font-size:1.75rem}.app-main .brief-heading{flex-wrap:wrap}
 .app-main .reading-settings{display:grid;gap:20px;max-width:600px}.app-main .reading-settings label{margin-bottom:8px}
+/* Secondary explanations stay distinct without dimming actions or live warnings. */
+:root{--supporting-text:#626e66}
+[data-contrast=high]{--supporting-text:var(--muted)}
+#app .app-main :is(
+  .micro:not(#ride-limit),
+  .voice-small,
+  .voice-transcript,
+  .voice-intro p:not(.eyebrow),
+  .page-heading>p:not(#trip-summary),
+  .transit-heading p:not(.eyebrow),
+  .transit-dates,
+  .transit-freshness,
+  .transit-foot p
+){font-size:.875rem;font-weight:400;line-height:1.65;color:var(--supporting-text)}
+#app .app-main :is(.transit-status,.transit-changes,.transit-post>p:not(.transit-dates)){
+  font-size:1rem;color:var(--ink)
+}
+#app .app-main .transit-controls .button{font-size:1rem}
 [hidden]{display:none!important}
 @media(max-width:600px){.app-header{padding:14px 18px;gap:8px;flex-wrap:wrap}.app-header nav{gap:16px}.app-main{padding:28px 18px 48px}.app-main .field-row{grid-template-columns:1fr;gap:0}.app-footer{padding:18px}.app-main .results>.card{padding:22px 18px}.app-main .badge{white-space:normal}.app-main .map-labels{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important}}
