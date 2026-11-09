@@ -30,6 +30,11 @@
   font-size:1rem;color:var(--ink)
 }
 #app .app-main .transit-controls .button{font-size:1rem}
+.app-help{border-top:1px solid var(--line);margin-top:24px;padding-top:8px}
+.app-help>summary{padding:12px 0;min-height:52px;font-weight:600;color:var(--accent)}
+.app-help>p{font-size:.875rem;line-height:1.65;color:var(--supporting-text)}
+.detail-reader{display:flex;margin:12px 0 18px}
+.voice-entry{margin-top:22px}
 [hidden]{display:none!important}
 @media(max-width:600px){.app-header{padding:14px 18px;gap:8px;flex-wrap:wrap}.app-header nav{gap:16px}.app-main{padding:28px 18px 48px}.app-main .field-row{grid-template-columns:1fr;gap:0}.app-footer{padding:18px}.app-main .results>.card{padding:22px 18px}.app-main .badge{white-space:normal}.app-main .map-labels{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important}}

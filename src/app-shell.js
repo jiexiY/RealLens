@@ -1,6 +1,7 @@
 import {PREFERENCES_KEY,readingPreferences} from './home-model.js';
 import {readJson,writeJson} from './trip-state.js';
 import {createManagedSpeech,stopAllSpeech} from './narration.js';
+import {mountPageReader} from './page-reader.js';
 import './journey.css';
 import './journey-reading.css';
 import './app-pages.css';
@@ -29,3 +30,9 @@ export function createPageSpeech({onState=()=>{},onError=announce}={}){
   return player;
 }
 applyPreferences();
+const main=document.querySelector('main'),toolbar=document.querySelector('.narration-actions');
+if(main&&toolbar){
+  let reader;
+  const player=createPageSpeech({onState:active=>reader?.sync(active)});
+  reader=mountPageReader({main,toolbar,player,rate:()=>prefs.rate,announce});
+}

@@ -1,0 +1,76 @@
+async(page)=>{
+  const base=await page.evaluate(()=>location.origin),checks=[],posts=[],errors=[];
+  const check=(ok,label)=>{if(!ok)throw Error(label);checks.push(label);};
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.addInitScript(()=>{
+    localStorage.setItem('reallens.narration.v1','off');
+    window.__readerQA={hold:false,plays:0,pauses:0,microphones:0,gps:0};
+    window.Audio=class {play(){window.__readerQA.plays++;if(!window.__readerQA.hold)setTimeout(()=>this.onended?.(),20);return Promise.resolve();}pause(){window.__readerQA.pauses++;}load(){}removeAttribute(){}};
+    if(navigator.mediaDevices)navigator.mediaDevices.getUserMedia=()=>{window.__readerQA.microphones++;return Promise.reject(Error('Unexpected mic'));};
+    Object.defineProperty(navigator,'geolocation',{configurable:true,value:{watchPosition(){window.__readerQA.gps++;return 1;},clearWatch(){}}});
+  });
+  await page.route('**/api/voice',route=>{
+    if(route.request().method()==='GET')return route.fulfill({json:{configured:true}});
+    posts.push(route.request().postDataJSON());return route.fulfill({contentType:'audio/mpeg',body:'test-audio'});
+  });
+  const finished=async()=>{await page.locator('[data-read-control="stop"]').waitFor({state:'hidden'});};
+  const enable=async()=>{await page.getByRole('button',{name:'Turn voice on',exact:true}).click();await page.waitForTimeout(150);posts.length=0;};
+  for(const path of ['/plan','/conditions','/talk','/ride','/settings','/sources','/bus']){
+    await page.goto(base+path);
+    await page.locator('[data-read-control="page"]').waitFor();
+    check(await page.getByRole('button',{name:'Read page information aloud',exact:true}).isVisible(),path+' has a named page reader');
+    check(await page.evaluate(()=>__readerQA.microphones===0&&__readerQA.gps===0),path+' does not request microphone or location');
+  }
+  await page.goto(base+'/plan');
+  const help=page.locator('.app-help');
+  check(!await help.locator('.detail-reader').isVisible(),'Read details starts outside the tab order in collapsed help');
+  const before=posts.length;await help.locator('summary').focus();await page.keyboard.press('Enter');
+  check(await help.locator('.detail-reader').isVisible(),'Keyboard expansion exposes Read details');
+  check(posts.length===before,'Opening details does not automatically request speech');
+  await help.locator('.detail-reader').click();await page.waitForTimeout(100);
+  check(posts.length===before,'Voice off blocks detail speech requests');
+  await help.locator('summary').click();await enable();
+  await page.getByRole('button',{name:'Read page information aloud',exact:true}).click();await finished();
+  let text=posts.map(p=>p.text).join(' ');
+  check(text.includes('Starting place: Reitz Union')&&text.includes('Destination: Marston'),'Page speech includes selected form values');
+  check(!text.includes('Choose from six campus places'),'Page speech excludes closed detail content');
+  await help.locator('summary').click();posts.length=0;
+  await help.locator('.detail-reader').click();await finished();
+  text=posts.map(p=>p.text).join(' ');
+  check(text.includes('Choose from six campus places')&&text.includes('confirmation'),'Detail speech includes the full explanation');
+  check(!text.includes('Starting place:'),'Reading a detail does not reread the whole page');
+  await page.evaluate(()=>__readerQA.hold=true);posts.length=0;
+  await help.locator('.detail-reader').click();await page.waitForFunction(()=>__readerQA.plays>0);
+  await page.getByRole('button',{name:'Stop reading',exact:true}).click();
+  check(await help.locator('.detail-reader').evaluate(e=>e===document.activeElement),'Stop returns focus to the reading control');
+  check(await page.evaluate(()=>__readerQA.pauses>0),'Stop cancels the audio player');
+  await help.locator('.detail-reader').click();await page.keyboard.press('Escape');
+  check(!await page.getByRole('button',{name:'Stop reading',exact:true}).isVisible(),'Escape stops reading');
+  await help.locator('.detail-reader').click();await help.locator('summary').click();
+  check(!await page.getByRole('button',{name:'Stop reading',exact:true}).isVisible(),'Collapsing the section stops its speech');
+  await page.getByRole('button',{name:'Read page information aloud',exact:true}).click();
+  await page.getByLabel('Destination',{exact:true}).selectOption('hub');
+  check(!await page.getByRole('button',{name:'Stop reading',exact:true}).isVisible(),'Changing a selected value cancels an outdated reading');
+  await help.locator('summary').click();await help.locator('.detail-reader').click();
+  await help.locator('p').first().evaluate(el=>el.textContent+=' Updated test information.');
+  await page.locator('[data-read-control="stop"]').waitFor({state:'hidden'});
+  check(!await page.getByRole('button',{name:'Stop reading',exact:true}).isVisible(),'Changed information cancels an outdated reading');
+  await page.getByRole('button',{name:'Read page information aloud',exact:true}).click();
+  await page.getByRole('button',{name:'Turn voice off',exact:true}).click();
+  check(!await page.getByRole('button',{name:'Stop reading',exact:true}).isVisible(),'Global mute stops page speech');
+  await page.goto(base+'/sources');await enable();
+  const privacy=page.locator('details').filter({has:page.getByText('Privacy and voice',{exact:true})});
+  await privacy.locator('summary').click();posts.length=0;
+  await privacy.locator('.detail-reader').click();await finished();
+  text=posts.map(p=>p.text).join(' ');
+  check(posts.length>1&&text.includes('Do not modify cane tips or grips'),'Long details are read across chunks without dropping the ending');
+  await page.goto(base+'/talk');
+  check(await page.getByLabel('Trip or briefing question',{exact:true}).isVisible(),'Typed input stays visible without expanding help');
+  check(!await page.getByText('What can I say?',{exact:true}).isVisible(),'Command explanations start collapsed');
+  await page.getByLabel('Trip or briefing question',{exact:true}).fill('from Reitz to Marston tomorrow at 8 AM');
+  await page.getByRole('button',{name:'Send request',exact:true}).click();
+  check(await page.getByRole('button',{name:'Confirm trip',exact:true}).isVisible(),'Trip confirmation stays visible');
+  check(errors.length===0,'No JavaScript errors: '+errors.join('; '));
+  await page.unroute('**/api/voice');
+  return {passed:checks.length,checks};
+}

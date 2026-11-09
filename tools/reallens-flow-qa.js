@@ -8,7 +8,7 @@ async (page) => {
   if(window.speechSynthesis){window.speechSynthesis.speak=()=>{window.__reallensQASpeech++;};window.speechSynthesis.cancel=()=>{};}
  });
  await page.route('**/api/voice',route=>{if(route.request().method()==='POST')calls.voicePost++;return route.fulfill({json:{configured:false}});});
- await page.route('**/api/environment?*',route=>{calls.environment++;return route.fulfill({json:{weather:{status:'unavailable'},alerts:{status:'unavailable'},closures:{status:'unavailable'}}});});
+ await page.route('**/api/environment?*',route=>{calls.environment++;return route.fulfill({json:{weather:{status:'unavailable'},alerts:{status:'available',items:[{event:'Test weather warning',severity:'Severe',headline:'Synthetic warning for browser testing',instruction:'Test instruction: seek shelter.',expires:new Date(Date.now()+3600000).toISOString(),source:'https://www.weather.gov/'}]},closures:{status:'unavailable'}}});});
  await page.route('**/api/closures',route=>route.fulfill({json:{status:'unavailable'}}));
  let delayTransit=false;
  await page.route('**/api/transit',async route=>{calls.transit++;if(delayTransit)await page.waitForTimeout(1200);await route.fulfill({json:{status:'available',fetchedAt:new Date().toISOString(),notices:[{id:'123',title:'QA RTS detour for Route 11',body:'Synthetic UI test only.',routes:['11'],postedAt:new Date().toISOString(),modifiedAt:new Date().toISOString()}]}});});
@@ -24,6 +24,9 @@ async (page) => {
  assert(await page.locator('.journey-sections>li').count()===3,'Real bundled NDVI is sampled into three path segments');
  const evidence=await page.locator('.journey-sections').textContent();assert(evidence.includes('Length-weighted mean NDVI:')&&evidence.includes('September 22, 2024'),'Actual vegetation evidence retains date and method');
  assert((await page.locator('.weather-section').textContent()).includes('Unavailable'),'Unavailable weather is not invented');
+ assert(await page.getByText('Test instruction: seek shelter.',{exact:true}).isVisible(),'Important weather instructions remain visible outside details');
+ assert(!await page.locator('#closure-auto').isVisible(),'Closure polling settings are collapsed');
+ assert(await page.locator('.weather-section .detail-reader').count()===1,'Dynamically loaded forecast details gain a reading control');
  await page.getByRole('button',{name:'Save journey',exact:true}).click();
  assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('fieldlens.journey.saved.v1')).destination)==='marston','Save persists places, not weather');
  await page.locator('#optional-map summary').click();assert(await page.locator('.study-map').count()===1,'Optional map renders actual study line');
