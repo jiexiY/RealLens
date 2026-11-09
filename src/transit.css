@@ -7,6 +7,11 @@
 @media(max-width:760px){.transit-panel{padding:22px}.transit-heading{flex-wrap:wrap;gap:0}.transit-heading>.badge{margin-bottom:18px}.transit-filter>div{width:100%}.transit-controls .button{font-size:.8125rem}.transit-post{padding:17px}.transit-post h4{min-width:0;flex-basis:100%}.workspace-heading>div:last-child{text-align:left}.transit-filter .button{flex:1}.transit-filter .button,.transit-controls .button{white-space:normal}.transit-foot a{flex-wrap:wrap}}
 @media(max-width:390px){.transit-panel{padding:18px}.transit-filter .button{flex-basis:100%}.transit-controls{flex-direction:column}.transit-controls .button{width:100%}.transit-post{padding:15px}.transit-heading h2{font-size:1.4rem}}
 /* The standalone page keeps controls aligned inside its padded card. */
+.transit-heading{margin-bottom:20px}
+.transit-help{border-top:1px solid var(--line);margin-top:24px;padding-top:12px}
+.transit-help>summary{min-height:52px;padding:12px 0;font-weight:600;color:var(--accent)}
+.transit-help>p{font-size:.875rem;line-height:1.65;color:var(--supporting-text,var(--muted))}
+.transit-help>summary:focus-visible,.transit-post summary:focus-visible{outline-offset:2px}
 .app-main .transit-filter{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px}
 .app-main .transit-filter>div{width:auto;min-width:0}
 .app-main .transit-filter label{display:block;margin-bottom:8px}
