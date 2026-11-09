@@ -57,12 +57,12 @@ const summaries={
   '/bus':'Bus alerts. Choose Stop announcements for your bus journey, or review published RTS rider alerts below. These alerts are not live bus positions or arrival times.',
   '/ride':'Bus stop announcements. Choose your route, direction, boarding stop and destination. Then choose Start journey to allow location access. Keep this page visible. Announcements estimate your phone’s proximity, not bus arrivals. Confirm stops with the bus operator.',
   '/settings':'Reading preferences. Adjust text size, contrast, detail and speech speed. The voice on or off button is at the top.',
-  '/sources':'Sources and privacy. Environmental data, bus stop data, methods and limitations are described here. This prototype has not been validated for independent navigation.'
+  '/sources':'Sources and privacy. Open a section for details about your data, voice, or journey information.'
 };
 const pathname=location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';
 const summary=summaries[pathname]||'RealLens. Voice controls are at the top.';
 toolbar=document.createElement('div');toolbar.className='narration-toolbar';toolbar.setAttribute('role','region');toolbar.setAttribute('aria-label','Voice controls');
-toolbar.innerHTML='<div class="narration-actions"><button type="button" id="narration-toggle"></button><button type="button" id="narration-retry" hidden>Play voice</button><span class="narration-credit">Voice by <a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">ElevenLabs<span class="sr-only"> (opens a new tab)</span></a></span></div><div id="narration-status" class="narration-status" role="status" aria-live="polite"></div>';
+toolbar.innerHTML='<div class="narration-actions"><button type="button" id="narration-toggle"></button><button type="button" id="narration-retry" hidden>Play voice</button><span class="narration-credit"><a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer" aria-label="Voice by ElevenLabs (opens a new tab)">elevenlabs.io</a></span></div><div id="narration-status" class="narration-status" role="status" aria-live="polite"></div>';
 document.body.prepend(toolbar);
 toggle=toolbar.querySelector('#narration-toggle');retry=toolbar.querySelector('#narration-retry');notice=toolbar.querySelector('#narration-status');
 const narrator=createManagedSpeech();
